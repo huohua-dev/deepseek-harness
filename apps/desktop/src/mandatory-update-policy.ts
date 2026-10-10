@@ -150,8 +150,9 @@ export class DesktopMandatoryUpdatePolicy {
     private readonly client: () => AccountClientMetadata,
     private readonly random: () => number = Math.random,
   ) {
-    if (valid(this.client().version) === null || valid(identity.bundledDshVersion) === null
-      || (identity.platform === 'win32' && identity.arch !== 'x64')) throw new Error('desktop policy: invalid installed client identity')
+    if (valid(this.client().version) === null || valid(identity.bundledDshVersion) === null) {
+      throw new Error('desktop policy: invalid installed client identity')
+    }
   }
 
   /** Platform headers for one check; the calling UI's language and UTC offset are read now. */

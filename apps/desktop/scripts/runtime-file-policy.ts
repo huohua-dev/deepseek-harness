@@ -39,6 +39,7 @@ export function desktopRuntimeFileExclusion(
     if (platform !== undefined && platform !== `${target.platform}-${target.arch}`) return 'node-pty other platform'
     if (file.endsWith('.pdb')) return 'node-pty debug symbols'
   }
-  if (name === '@koromix/koffi-win32-x64' && entry === 'win32_x64/koffi.lib') return 'Koffi import library'
+  if ((name === '@koromix/koffi-win32-x64' && entry === 'win32_x64/koffi.lib')
+    || (name === '@koromix/koffi-win32-arm64' && entry === 'win32_arm64/koffi.lib')) return 'Koffi import library'
   return undefined
 }

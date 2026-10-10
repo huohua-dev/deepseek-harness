@@ -50,5 +50,5 @@ if (process.argv[1] !== undefined && resolve(process.argv[1]) === import.meta.fi
   if (!process.env.GITHUB_OUTPUT || !process.env.GITHUB_STEP_SUMMARY) throw new Error('Run this adapter from GitHub Actions')
   writeFileSync(resolve(appRoot, '.env.windows'), result.settings, { flag: 'wx' })
   appendFileSync(process.env.GITHUB_OUTPUT, `version=${result.version}\n`)
-  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Windows x64 unsigned installer\n\nVersion: ${result.version}\n\nCommit: ${process.env.GITHUB_SHA}\n\nDeployment: ${process.env.PACKAGE_DEPLOYMENT}\n`)
+  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Windows ${process.arch} unsigned installer\n\nVersion: ${result.version}\n\nCommit: ${process.env.GITHUB_SHA}\n\nDeployment: ${process.env.PACKAGE_DEPLOYMENT}\n`)
 }

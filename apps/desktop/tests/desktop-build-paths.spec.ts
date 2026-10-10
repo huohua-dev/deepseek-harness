@@ -54,6 +54,7 @@ describe('desktop build paths', () => {
     expect(desktopTargetPlatform('mac-arm64')).toEqual({ platform: 'darwin', arch: 'arm64' })
     expect(desktopTargetPlatform('mac-x64')).toEqual({ platform: 'darwin', arch: 'x64' })
     expect(desktopTargetPlatform('win-x64')).toEqual({ platform: 'win32', arch: 'x64' })
+    expect(desktopTargetPlatform('win-arm64')).toEqual({ platform: 'win32', arch: 'arm64' })
     expect(() => desktopTargetPlatform('linux-x64' as 'mac-x64')).toThrow(/unsupported target/u)
   })
 
@@ -63,6 +64,7 @@ describe('desktop build paths', () => {
       DSH_DESKTOP_TARGET_ARCH: 'x64',
     }, 'darwin', 'arm64')).toBe('mac-x64')
     expect(resolveDesktopBuildTarget({}, 'win32', 'x64')).toBe('win-x64')
+    expect(resolveDesktopBuildTarget({ DSH_DESKTOP_TARGET_PLATFORM: 'win32', DSH_DESKTOP_TARGET_ARCH: 'arm64' }, 'win32', 'arm64')).toBe('win-arm64')
     expect(() => resolveDesktopBuildTarget({}, 'linux', 'x64')).toThrow(/unsupported target/u)
     expect(() => desktopTargetBuildPaths('linux-x64' as 'mac-x64')).toThrow(/unsupported target/u)
   })

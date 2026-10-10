@@ -8,9 +8,13 @@ import { expect, it } from 'vitest'
 import { downloadPrimaryRuntimeAsset, prepareOfficeSkillAssets, primaryRuntimePayloadDigest, smokePrimaryRuntime, unpackPrimaryRuntimeWheel } from './prepare.ts'
 import lock from './lock.json' with { type: 'json' }
 
+/** Targets locked for Desktop packaging that have no Python SDK wheel. */
+const DESKTOP_ONLY_TARGETS = ['win-arm64']
+
 it('covers every SDK wheel target with the shared interpreter lock', () => {
   const platforms = JSON.parse(readFileSync(new URL('../../python/sdk-runtime/platforms.json', import.meta.url), 'utf8')) as Record<string, unknown>
-  expect(Object.keys(lock.targets).sort()).toEqual(Object.keys(platforms).map(target => target.replace('macos-', 'mac-')).sort())
+  expect(Object.keys(lock.targets).filter(target => !DESKTOP_ONLY_TARGETS.includes(target)).sort())
+    .toEqual(Object.keys(platforms).map(target => target.replace('macos-', 'mac-')).sort())
 })
 
 const libraryWheel = Buffer.from('UEsDBAoAAAAAAASeLl0sYMPjDAAAAAwAAAAJAAAAc2FtcGxlLnB5c2FtcGxlID0gNDIKUEsBAh4DCgAAAAAABJ4uXSxgw+MMAAAADAAAAAkAAAAAAAAAAQAAAKSBAAAAAHNhbXBsZS5weVBLBQYAAAAAAQABADcAAAAzAAAAAAA=', 'base64')
