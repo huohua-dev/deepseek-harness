@@ -158,7 +158,11 @@ Function InstallerPreflight
         StrCpy $InstallerError "$(INSTALLER_PATH_WRITABLE)"
         Return
     ${EndIf}
+!ifdef APP_ARM64_UNPACKED_SIZE
+    IntOp $2 ${APP_ARM64_UNPACKED_SIZE} + 65536
+!else
     IntOp $2 ${APP_64_UNPACKED_SIZE} + 65536
+!endif
     System::Int64Op $2 * 1024
     Pop $2
     System::Int64Op $0 < $2

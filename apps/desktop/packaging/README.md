@@ -93,7 +93,9 @@ pnpm run package:desktop:mac:x64
 pnpm run package:desktop:win:x64
 ```
 
-The macOS arm64 command requires Apple Silicon. The macOS x64 command runs on Intel macOS or Apple Silicon with Rosetta. The Windows x64 command requires Windows x64. Linux is not a supported Desktop release target.
+The macOS arm64 command requires Apple Silicon. The macOS x64 command runs on Intel macOS or Apple Silicon with Rosetta. Windows x64 and ARM64 commands require matching native hosts; `pnpm run package:desktop:win:arm64:unsigned` builds the ARM64 test installer. Linux is not a supported Desktop release target.
+
+The [fork ARM64 workflow](../../../.github/workflows/desktop-arm64-package.yml) builds unsigned Windows ARM64 EXEs and ad-hoc-signed macOS ARM64 DMGs on GitHub-hosted runners when `huohua-dev/deepseek-harness` receives a `master` push, including Sync fork updates. Manual dispatch is also available. Both jobs use the CI auto version by default, run packaged-runtime checks, and retain verified installers and diagnostics in Actions Artifacts for 14 days. No signing secrets, self-hosted runners, release publication, or update feeds are used. Windows uses the reserved `mandatory-update.invalid` policy origin; macOS omits policy configuration. SmartScreen or Gatekeeper may require explicit approval. Keep this workflow and the ARM64 support when merging upstream; replacing the fork branch with upstream discards them.
 
 Both release and local unsigned macOS DMGs use LZMA compression (`dmg.format: 'ULMO'`) in [the electron-builder configuration](../scripts/electron-builder-config.mjs). A [build-time patch](../../../patches/app-builder-lib@26.17.0.patch) adds this format to the pinned builder's validation and TypeScript declarations.
 

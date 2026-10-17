@@ -93,7 +93,9 @@ pnpm run package:desktop:mac:x64
 pnpm run package:desktop:win:x64
 ```
 
-macOS arm64 命令要求 Apple Silicon。macOS x64 命令可以在 Intel macOS 或带 Rosetta 的 Apple Silicon 上运行。Windows x64 命令要求 Windows x64。Linux 不是受支持的 Desktop 发布目标。
+macOS arm64 命令要求 Apple Silicon。macOS x64 命令可以在 Intel macOS 或带 Rosetta 的 Apple Silicon 上运行。Windows x64 和 ARM64 命令要求架构匹配的原生主机；`pnpm run package:desktop:win:arm64:unsigned` 构建 ARM64 测试安装器。Linux 不是受支持的 Desktop 发布目标。
+
+[fork ARM64 工作流](../../../.github/workflows/desktop-arm64-package.yml)在 `huohua-dev/deepseek-harness` 收到 `master` push（包括 Sync fork 更新）时，使用 GitHub 托管 runner 构建未签名的 Windows ARM64 EXE 和 ad-hoc 签名的 macOS ARM64 DMG，也支持手动触发。两个任务默认使用 CI 自动版本号，执行打包后运行时检查，并在 Actions Artifacts 中保留已验证安装包和诊断日志 14 天。不使用签名密钥、自托管 runner、发布上传或更新 feed。Windows 使用保留域名 `mandatory-update.invalid` 作为策略地址；macOS 不配置更新策略。SmartScreen 或 Gatekeeper 可能要求手动批准。合并上游时须保留此工作流和 ARM64 支持；用上游分支覆盖 fork 会丢弃这些改动。
 
 macOS 正式发布和本地未签名 DMG 都通过 [electron-builder 配置](../scripts/electron-builder-config.mjs)中的 `dmg.format: 'ULMO'` 使用 LZMA 压缩。[构建时补丁](../../../patches/app-builder-lib@26.17.0.patch)为固定版本 builder 的校验规则和 TypeScript 声明添加此格式。
 

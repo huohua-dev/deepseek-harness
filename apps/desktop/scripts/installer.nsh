@@ -1,7 +1,12 @@
 !include "LogicLib.nsh"
 !include "FileFunc.nsh"
 !define INSTALLER_SOURCE_DIR "${__FILEDIR__}\..\installer"
-!define /ifndef INSTALLER_BUILD_DIR "${__FILEDIR__}\..\.desktop-build\targets\win-x64\installer-ui"
+; electron-builder defines APP_ARM64 for an arm64 payload in both the installer and uninstaller scripts.
+!ifdef APP_ARM64
+  !define /ifndef INSTALLER_BUILD_DIR "${__FILEDIR__}\..\.desktop-build\targets\win-arm64\installer-ui"
+!else
+  !define /ifndef INSTALLER_BUILD_DIR "${__FILEDIR__}\..\.desktop-build\targets\win-x64\installer-ui"
+!endif
 
 ManifestDPIAware true
 !ifndef BUILD_UNINSTALLER

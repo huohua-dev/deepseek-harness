@@ -6,6 +6,11 @@ import { desktopReleasesRoot, retainDesktopCi } from '../scripts/retain-desktop-
 import { verifyRetainedDesktopRelease } from '../scripts/desktop-release-store.ts'
 import { prepareDesktopPublication } from '../scripts/publish-desktop-ci.ts'
 
+it('keeps fork Windows ARM64 artifacts out of release publication', async () => {
+  await expect(retainDesktopCi({ DSH_DESKTOP_TARGET_PLATFORM: 'win32', DSH_DESKTOP_TARGET_ARCH: 'arm64' }))
+    .rejects.toThrow('Windows ARM64 builds use fork Actions artifacts')
+})
+
 const roots: string[] = []
 afterEach(async () => { await Promise.all(roots.splice(0).map(root => rm(root, { recursive: true, force: true }))) })
 

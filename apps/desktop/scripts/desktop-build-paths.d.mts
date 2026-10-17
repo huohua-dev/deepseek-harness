@@ -39,7 +39,7 @@ export function desktopTargetBuildPaths(target: DesktopAutoUpdateTarget): Deskto
 
 /**
  * Return the platform and architecture of the payload one release target prepares.
- * Windows is prepared as x64 only, so this differs from the build host on an arm64 Windows machine.
+ * Windows defaults to x64 unless the packaging environment selects arm64, so this can differ from the build host.
  * @param target - Supported Desktop target name.
  * @returns Platform and architecture of the prepared payload.
  */

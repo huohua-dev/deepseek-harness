@@ -10,9 +10,10 @@ import { resolveDesktopPackageTarget } from './package-target.ts'
 const paths = resolveDesktopTargetBuildPaths()
 const { values } = parseArgs({ options: { unsigned: { type: 'boolean', default: false }, 'skip-notarization': { type: 'boolean', default: false } }, allowPositionals: false })
 const target = resolveDesktopBuildTarget()
-const windows = target === 'win-x64'
+const windows = target.startsWith('win-')
 const artifacts = desktopArtifactOutput(paths, { unsigned: values.unsigned, skipNotarization: values['skip-notarization'] }).directory
-const application = windows ? join(artifacts, 'win-unpacked')
+// electron-builder names non-x64 Windows output directories after their architecture.
+const application = windows ? join(artifacts, target === 'win-arm64' ? 'win-arm64-unpacked' : 'win-unpacked')
   : join(artifacts, target === 'mac-arm64' ? 'mac-arm64' : 'mac', 'DeepSeek Harness.app', 'Contents')
 const resources = join(application, windows ? 'resources' : 'Resources')
 const executable = windows ? join(application, 'DeepSeek Harness.exe') : join(application, 'MacOS', 'DeepSeek Harness')

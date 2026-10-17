@@ -41,8 +41,8 @@ export function resolveCredentialUploadEnvironment(
   selected: 'test' | 'production', bucket: string,
   target: DesktopPackageTargetName,
 ): NodeJS.ProcessEnv {
-  const platform = target === 'win-x64' ? 'win32' : 'darwin'
-  const arch = target === 'mac-arm64' ? 'arm64' : 'x64'
+  const platform = target.startsWith('win-') ? 'win32' : 'darwin'
+  const arch = target.endsWith('-arm64') ? 'arm64' : 'x64'
   const destination = resolveDesktopUploadConfig(fileEnvironment, platform, arch)
   if (destination.environment !== selected || destination.bucket !== bucket) {
     throw new Error('desktop upload: credential launcher deployment or bucket differs from the packaged release destination')
@@ -73,7 +73,7 @@ export async function uploadDesktopTarget(args: string[]): Promise<void> {
     throw new Error('desktop upload: expected exactly one target')
   }
   const name = targetName(target)
-  const fileEnvironment = loadDesktopPackageEnvironment(name === 'win-x64' ? 'win32' : 'darwin')
+  const fileEnvironment = loadDesktopPackageEnvironment(name.startsWith('win-') ? 'win32' : 'darwin')
   const launcher = values['credential-launcher'] === true
   if (launcher ? values.environment === undefined || values.bucket === undefined
     : values.environment !== undefined || values.bucket !== undefined) {
