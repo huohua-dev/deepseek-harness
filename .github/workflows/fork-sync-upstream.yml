@@ -1,0 +1,42 @@
+name: Sync fork upstream and build ARM64
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: fork-sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'huohua-dev/deepseek-harness'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Merge upstream without discarding fork commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GH_REPO/merge-upstream" -f branch=master
+      - name: Ensure the current master has an installer build
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(gh api "repos/$GH_REPO/git/ref/heads/master" --jq '.object.sha')
+          runs=$(gh api --method GET "repos/$GH_REPO/actions/workflows/desktop-arm64-package.yml/runs" -f head_sha="$sha" -f per_page=1 --jq '.total_count')
+          if [ "$runs" -eq 0 ]; then
+            # GITHUB_TOKEN pushes do not trigger push workflows; explicit dispatch does.
+            gh workflow run desktop-arm64-package.yml --repo "$GH_REPO" --ref master -f build_version=auto
+            printf 'Dispatched ARM64 installers for master `%s`.\n' "$sha" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf 'Master `%s` already has an installer run. Inspect failed runs in Actions; no duplicate build was dispatched.\n' "$sha" >> "$GITHUB_STEP_SUMMARY"
+          fi

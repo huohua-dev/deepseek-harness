@@ -97,6 +97,8 @@ macOS arm64 命令要求 Apple Silicon。macOS x64 命令可以在 Intel macOS �
 
 [fork ARM64 工作流](../../../.github/workflows/desktop-arm64-package.yml)在 `huohua-dev/deepseek-harness` 收到 `master` push（包括 Sync fork 更新）时，使用 GitHub 托管 runner 构建未签名的 Windows ARM64 EXE 和 ad-hoc 签名的 macOS ARM64 DMG，也支持手动触发。两个任务默认使用 CI 自动版本号，执行打包后运行时检查，并在 Actions Artifacts 中保留已验证安装包和诊断日志 14 天。不使用签名密钥、自托管 runner、发布上传或更新 feed。Windows 使用保留域名 `mandatory-update.invalid` 作为策略地址；macOS 不配置更新策略。SmartScreen 或 Gatekeeper 可能要求手动批准。合并上游时须保留此工作流和 ARM64 支持；用上游分支覆盖 fork 会丢弃这些改动。
 
+[上游同步工作流](../../../.github/workflows/fork-sync-upstream.yml)每小时 UTC 第 23 分钟检查官方父仓库，也支持手动触发。GitHub 可能延迟定时任务，并会在仓库连续 60 天无活动后禁用定时任务。merge-upstream API 保留 fork 提交，发生冲突时失败，不覆盖历史；须手动解决冲突后重跑。同步后，如果当前 master 没有打包记录，工作流会显式触发 ARM64 打包，因为 `GITHUB_TOKEN` 推送不会触发 push 工作流。已有运行（包括失败）不会重复创建；失败构建须在 Actions 中检查和重跑。触发失败会保留已合并提交，下次同步会再次检查。仅同步工作流具有 contents/actions 写权限；打包仍为只读，且不使用个人令牌。
+
 macOS 正式发布和本地未签名 DMG 都通过 [electron-builder 配置](../scripts/electron-builder-config.mjs)中的 `dmg.format: 'ULMO'` 使用 LZMA 压缩。[构建时补丁](../../../patches/app-builder-lib@26.17.0.patch)为固定版本 builder 的校验规则和 TypeScript 声明添加此格式。
 
 每个目标都在 `apps/desktop/.desktop-build/targets/<target>/` 下持有自己的打包输入、已准备运行时、包集合、dsh 依赖树、pnpm 准备状态、未打包应用、更新元数据和最终产物。Electron 归档缓存继续由 `.desktop-build/downloads` 共享，因为每个归档文件名都包含版本、平台和架构，并且在解包前经过验证。目标构建绝不读取其他目标的可变准备状态。
